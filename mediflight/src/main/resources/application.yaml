@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: mediflight
+  datasource:
+    url: jdbc:h2:mem:9092:mediflight
+    username: admin
+    password: admin
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    change-log: classpath:db.changelog/db.changelog-master.xml
+
+server:
+  port: 8095
+  servlet:
+    context-path: /${spring.application.name}

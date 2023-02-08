@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <include file="classpath:db.changelog/sql/medication_changelog.sql"/>
+    <include file="classpath:db.changelog/sql/drone_changelog.sql"/>
+    <include file="classpath:db.changelog/sql/add_medication_restrict.sql"/>
+    <include file="classpath:db.changelog/sql/drones.sql"/>
+    <include file="classpath:db.changelog/sql/medications.sql"/>
+    <include file="classpath:db.changelog/sql/check_battery_table_changelog.sql"/>
+</databaseChangeLog>
