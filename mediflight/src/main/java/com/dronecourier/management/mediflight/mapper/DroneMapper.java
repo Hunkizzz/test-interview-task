@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface DroneMapper {
     @Mapping(source = "id", target = "id")
-    DroneDto DroneToDroneDto(Drone drone);
+    DroneDto droneToDroneDto(Drone drone);
 
     @Mapping(source = "id", target = "id")
-    Drone DroneDtoToDrone(DroneDto droneDto);
+    Drone droneDtoToDrone(DroneDto droneDto);
 }

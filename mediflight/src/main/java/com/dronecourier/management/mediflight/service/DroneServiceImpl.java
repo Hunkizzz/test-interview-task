@@ -32,7 +32,7 @@ public class DroneServiceImpl implements DroneService {
     public void registerDrone(DroneDto droneDto) {
         if (droneDto.getId() == null)
             droneDto.setId(String.valueOf(UUID.randomUUID()));
-        Drone drone = droneMapper.DroneDtoToDrone(droneDto);
+        Drone drone = droneMapper.droneDtoToDrone(droneDto);
         droneRepository.save(drone);
     }
 
@@ -50,7 +50,7 @@ public class DroneServiceImpl implements DroneService {
                 .stream()
                 .map(medicationMapper::medicationToMedicationWithoutImageDto)
                 .collect(Collectors.toList());
-        return new MedicineDeliveryDroneDto(droneMapper.DroneToDroneDto(drone),
+        return new MedicineDeliveryDroneDto(droneMapper.droneToDroneDto(drone),
                 dtoList);
 
     }
@@ -67,7 +67,7 @@ public class DroneServiceImpl implements DroneService {
     public Set<DroneDto> getAvailableDrones() {
 
         List<Drone> drones = droneRepository.findByState(DroneState.IDLE);
-        return drones.stream().map(droneMapper::DroneToDroneDto).collect(Collectors.toSet());
+        return drones.stream().map(droneMapper::droneToDroneDto).collect(Collectors.toSet());
     }
 
     @Override
