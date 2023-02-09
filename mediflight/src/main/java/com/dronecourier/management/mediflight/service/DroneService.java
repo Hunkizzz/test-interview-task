@@ -1,21 +1,19 @@
 package com.dronecourier.management.mediflight.service;
 
-import com.dronecourier.management.mediflight.dto.DroneDto;
-import com.dronecourier.management.mediflight.dto.MedicineDeliveryDroneDto;
 import com.dronecourier.management.mediflight.model.Drone;
 
-import java.util.Set;
+import java.util.List;
 
 public interface DroneService {
-    void registerDrone(DroneDto droneDto);
+    void registerDrone(Drone droneDto);
 
     Drone getRequestedDrone(String droneId);
 
-    MedicineDeliveryDroneDto getRequestedDroneWithMedications(String droneId);
+    Drone getRequestedDroneWithMedications(String droneId);
 
     void loadDrone(Drone drone);
 
-    Set<DroneDto> getAvailableDrones();
+    List<Drone> getAvailableDrones();
 
     int getDroneBatteryLevel(String droneId);
 

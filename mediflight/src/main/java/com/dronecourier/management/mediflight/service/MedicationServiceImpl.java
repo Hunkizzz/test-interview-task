@@ -5,6 +5,7 @@ import com.dronecourier.management.mediflight.exception.EntityNotFoundException;
 import com.dronecourier.management.mediflight.model.Medication;
 import com.dronecourier.management.mediflight.repository.MedicationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class MedicationServiceImpl implements MedicationService {
     private final MedicationRepository medicationRepository;
 
@@ -22,6 +24,7 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
+    @Transactional
     public void setImage(ImageDto imageDto) throws IOException {
         Medication medication = medicationRepository.findById(UUID.fromString(imageDto.getUuid()))
                 .orElseThrow(() -> new EntityNotFoundException(""));
@@ -49,6 +52,7 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
+    @Transactional
     public void setSupplierForMedication(List<Medication> medications) {
         medicationRepository.saveAll(medications);
     }
@@ -59,6 +63,7 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
+    @Transactional
     public void save(List<Medication> medications) {
         medicationRepository.saveAll(medications);
     }

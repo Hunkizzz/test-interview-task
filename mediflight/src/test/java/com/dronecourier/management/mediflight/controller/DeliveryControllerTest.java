@@ -2,8 +2,6 @@ package com.dronecourier.management.mediflight.controller;
 
 import com.dronecourier.management.mediflight.dto.DeliveryDto;
 import com.dronecourier.management.mediflight.service.DeliveryServiceImpl;
-import com.dronecourier.management.mediflight.service.DroneServiceImpl;
-import com.dronecourier.management.mediflight.service.MedicationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +19,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DeliveryController.class)
 class DeliveryControllerTest {
+    @MockBean
+    DeliveryServiceImpl deliveryService;
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    DeliveryServiceImpl deliveryService;
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void loadDrone_withValidRequest_shouldReturn200() throws Exception {
@@ -54,13 +59,5 @@ class DeliveryControllerTest {
         mockMvc.perform(post("/delivery/return/{droneId}", droneId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-    }
-
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

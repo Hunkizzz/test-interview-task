@@ -1,38 +1,29 @@
 package com.dronecourier.management.mediflight.service;
 
-import com.dronecourier.management.mediflight.dto.DroneDto;
-import com.dronecourier.management.mediflight.dto.MedicationWithoutImageDto;
-import com.dronecourier.management.mediflight.dto.MedicineDeliveryDroneDto;
 import com.dronecourier.management.mediflight.enums.DroneState;
 import com.dronecourier.management.mediflight.exception.EntityNotFoundException;
-import com.dronecourier.management.mediflight.mapper.DroneMapper;
-import com.dronecourier.management.mediflight.mapper.MedicationMapper;
 import com.dronecourier.management.mediflight.model.Drone;
 import com.dronecourier.management.mediflight.repository.DroneRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DroneServiceImpl implements DroneService {
 
     DroneRepository droneRepository;
-    DroneMapper droneMapper;
-    MedicationMapper medicationMapper;
 
     @Override
-    public void registerDrone(DroneDto droneDto) {
-        if (droneDto.getId() == null)
-            droneDto.setId(String.valueOf(UUID.randomUUID()));
-        Drone drone = droneMapper.droneDtoToDrone(droneDto);
+    @Transactional
+    public void registerDrone(Drone drone) {
         droneRepository.save(drone);
     }
 
@@ -43,19 +34,13 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
-    public MedicineDeliveryDroneDto getRequestedDroneWithMedications(String droneId) {
-        Drone drone = droneRepository.findDroneById(UUID.fromString(droneId))
+    public Drone getRequestedDroneWithMedications(String droneId) {
+        return droneRepository.findDroneById(UUID.fromString(droneId))
                 .orElseThrow(() -> new EntityNotFoundException("Drone with this id was not found: " + droneId));
-        List<MedicationWithoutImageDto> dtoList = drone.getMedications()
-                .stream()
-                .map(medicationMapper::medicationToMedicationWithoutImageDto)
-                .collect(Collectors.toList());
-        return new MedicineDeliveryDroneDto(droneMapper.droneToDroneDto(drone),
-                dtoList);
-
     }
 
     @Override
+    @Transactional
     public void loadDrone(Drone drone) {
         drone.setState(DroneState.LOADING);
         drone.setBatteryCapacity(drone.getBatteryCapacity() - 1);
@@ -64,10 +49,8 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
-    public Set<DroneDto> getAvailableDrones() {
-
-        List<Drone> drones = droneRepository.findByState(DroneState.IDLE);
-        return drones.stream().map(droneMapper::droneToDroneDto).collect(Collectors.toSet());
+    public List<Drone> getAvailableDrones() {
+        return droneRepository.findByState(DroneState.IDLE);
     }
 
     @Override
@@ -78,6 +61,7 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
+    @Transactional
     public void save(Drone drone) {
         droneRepository.save(drone);
     }

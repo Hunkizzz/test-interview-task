@@ -47,6 +47,7 @@ class DeliveryServiceImplTest {
         deliveryDto.setMedicationIds(Arrays.asList("1", "2"));
         Drone drone = new Drone();
         drone.setId(UUID.fromString("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a"));
+        drone.setState(DroneState.IDLE);
         drone.setBatteryCapacity(10);
         when(droneService.getRequestedDrone("1")).thenReturn(drone);
         assertThatThrownBy(() -> deliveryService.loadDrone(deliveryDto))
@@ -58,12 +59,13 @@ class DeliveryServiceImplTest {
     void loadDrone_whenMedicationNotFound_shouldThrowEntityNotFoundException() {
         String uuid = String.valueOf(UUID.randomUUID());
         DeliveryDto deliveryDto = new DeliveryDto();
-        deliveryDto.setDroneId("1");
+        deliveryDto.setDroneId("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a");
         deliveryDto.setMedicationIds(Arrays.asList(uuid, "70f7b8c9-c5e5-4d5b-8b30-e5c7f5d0cf8f"));
         Drone drone = new Drone();
+        drone.setState(DroneState.IDLE);
         drone.setId(UUID.fromString("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a"));
         drone.setBatteryCapacity(50);
-        when(droneService.getRequestedDrone("1")).thenReturn(drone);
+        when(droneService.getRequestedDrone("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a")).thenReturn(drone);
         Medication medication = new Medication();
         medication.setId(UUID.fromString(uuid));
         when(medicationService.getMedicationList(deliveryDto.getMedicationIds())).thenReturn(Collections.singletonList(medication));
@@ -81,6 +83,7 @@ class DeliveryServiceImplTest {
         drone.setId(UUID.fromString("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a"));
         drone.setBatteryCapacity(50);
         drone.setWeightLimit(100);
+        drone.setState(DroneState.IDLE);
         when(droneService.getRequestedDrone("1")).thenReturn(drone);
         List<Medication> medications = Arrays.asList(new Medication(), new Medication());
         medications.forEach(medication -> medication.setWeight(200));

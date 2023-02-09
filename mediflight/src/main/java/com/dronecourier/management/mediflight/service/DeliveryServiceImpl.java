@@ -28,29 +28,40 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (drone == null) {
             throw new EntityNotFoundException("Drone with this id was not found: " + deliveryDto.getDroneId());
         }
-        if (drone.getBatteryCapacity() < 25) {
-            throw new EntityNotFoundException("Low charge level - cannot load medications.\n " +
-                    "The drone must be recharged before loading medications. current charge level is " + drone.getBatteryCapacity());
-        }
-        List<Medication> medicationList = medicationService.getMedicationList(deliveryDto.getMedicationIds());
-        if (deliveryDto.getMedicationIds().size() != medicationList.size()) {
+        if (drone.getState() == DroneState.IDLE) {
+            if (drone.getBatteryCapacity() < 25) {
+                throw new EntityNotFoundException("Low charge level - cannot load medications.\n " +
+                        "The drone must be recharged before loading medications. current charge level is " + drone.getBatteryCapacity());
+            }
+            List<Medication> medicationList = medicationService.getMedicationList(deliveryDto.getMedicationIds());
+            if (deliveryDto.getMedicationIds().size() != medicationList.size()) {
 
-            String absentIds = deliveryDto.getMedicationIds()
-                    .stream()
-                    .filter(medicationId -> !medicationList.stream()
-                            .map(Medication::getId)
-                            .collect(Collectors.toList())
-                            .contains(UUID.fromString(medicationId)))
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(", "));
-            throw new EntityNotFoundException("This ids of medications were not found : " + absentIds);
-        }
-        if (drone.getWeightLimit() >= medicationList.stream().mapToLong(Medication::getWeight).sum()) {
-            droneService.loadDrone(drone);
-            medicationList.forEach(medication -> medication.setDroneId(drone.getId()));
-            medicationService.setSupplierForMedication(medicationList);
+                String absentIds = deliveryDto.getMedicationIds()
+                        .stream()
+                        .filter(medicationId -> !medicationList.stream()
+                                .map(Medication::getId)
+                                .collect(Collectors.toList())
+                                .contains(UUID.fromString(medicationId)))
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(", "));
+                throw new EntityNotFoundException("This ids of medications were not found : " + absentIds);
+            }
+            String busyMedications = medicationList.stream()
+                    .filter(medication -> medication.getDroneId() != null)
+                    .map(Medication::getDroneId)
+                    .map(String::valueOf).collect(Collectors.joining(", "));
+            if (!busyMedications.isEmpty()) {
+                throw new IllegalArgumentException("These medications are busy: " + busyMedications);
+            }
+            if (drone.getWeightLimit() >= medicationList.stream().mapToLong(Medication::getWeight).sum()) {
+                droneService.loadDrone(drone);
+                medicationList.forEach(medication -> medication.setDroneId(drone.getId()));
+                medicationService.setSupplierForMedication(medicationList);
+            } else {
+                throw new IllegalArgumentException("The drone cannot carry the medications");
+            }
         } else {
-            throw new IllegalArgumentException("The drone cannot carry the medications");
+            throw new IllegalArgumentException("The drone is not in a state to be delivered");
         }
     }
 

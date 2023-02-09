@@ -1,5 +1,5 @@
 CREATE TYPE drone_model AS ENUM
-    ('Lightweight', 'Middleweight', 'Cruiserweight', 'Heavyweight');
+    ('LIGHTWEIGHT', 'MIDDLEWEIGHT', 'CRUISERWEIGHT', 'HEAVYWEIGHT');
 
 CREATE TYPE drone_state AS ENUM
     ('IDLE', 'LOADING', 'LOADED', 'DELIVERING', 'DELIVERED', 'RETURNING');
@@ -10,6 +10,6 @@ CREATE TABLE drone
     serial_number    VARCHAR(100) NOT NULL UNIQUE,
     model            drone_model,
     weight_limit     BIGINT,
-    battery_capacity INT,
+    battery_capacity INT CHECK (battery_capacity <= 100),
     state            drone_state
 );

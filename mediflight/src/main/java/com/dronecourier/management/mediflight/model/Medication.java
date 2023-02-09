@@ -28,7 +28,7 @@ public class Medication {
     private UUID id;
 
     @Column(name = "name")
-    @Pattern(regexp = "[a-zA-Z0-9-_]+")
+    @Pattern(regexp = "[A-Za-z0-9-_]+")
     private String name;
 
     @Column(name = "weight")

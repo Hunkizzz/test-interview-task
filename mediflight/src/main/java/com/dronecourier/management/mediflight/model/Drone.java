@@ -18,9 +18,6 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,15 +42,12 @@ public class Drone {
     private UUID id;
 
     @Column(name = "serial_number")
-    @NotNull
-    @Pattern(regexp = "[\\w\\s]{1,100}", message = "Serial number must be provided and must be shorter than 100 characters")
     private String serialNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "model")
     private DroneModel model;
 
-    @Max(500)
     @Column(name = "weight_limit")
     private int weightLimit;
 
