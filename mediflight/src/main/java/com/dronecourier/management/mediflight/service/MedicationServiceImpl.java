@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,7 +36,8 @@ public class MedicationServiceImpl implements MedicationService {
             }
             try {
                 byte[] imageBytes = resourceAsStream.readAllBytes();
-                medication.setImage(imageBytes);
+                byte[] encodedImageBytes = Base64.getEncoder().encode(imageBytes);
+                medication.setImage(encodedImageBytes);
                 medicationRepository.save(medication);
             } catch (IOException e) {
                 throw new IOException(e);

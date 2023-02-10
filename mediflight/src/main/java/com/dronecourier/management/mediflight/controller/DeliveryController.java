@@ -1,7 +1,7 @@
 package com.dronecourier.management.mediflight.controller;
 
 import com.dronecourier.management.mediflight.dto.DeliveryDto;
-import com.dronecourier.management.mediflight.service.DeliveryServiceImpl;
+import com.dronecourier.management.mediflight.service.DeliveryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,23 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class DeliveryController {
-    DeliveryServiceImpl deliveryServiceImpl;
+    DeliveryService deliveryService;
 
     @PostMapping("/load")
     public ResponseEntity<String> loadDrone(@RequestBody DeliveryDto deliveryDto) {
-        deliveryServiceImpl.loadDrone(deliveryDto);
+        deliveryService.loadDrone(deliveryDto);
         return ResponseEntity.ok("Ok");
     }
 
     @PostMapping("/deliver/{droneId}")
     public ResponseEntity<String> deliverDrone(@PathVariable String droneId) {
-        deliveryServiceImpl.deliverDrone(droneId);
+        deliveryService.deliverDrone(droneId);
         return ResponseEntity.ok("Ok");
     }
 
     @PostMapping("/return/{droneId}")
     public ResponseEntity<String> returnDrone(@PathVariable String droneId) {
-        deliveryServiceImpl.returnDrone(droneId);
+        deliveryService.returnDrone(droneId);
         return ResponseEntity.ok("Ok");
     }
 }

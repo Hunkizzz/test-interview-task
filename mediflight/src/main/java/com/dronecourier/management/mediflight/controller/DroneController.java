@@ -6,7 +6,7 @@ import com.dronecourier.management.mediflight.dto.MedicineDeliveryDroneDto;
 import com.dronecourier.management.mediflight.mapper.DroneMapper;
 import com.dronecourier.management.mediflight.mapper.MedicationMapper;
 import com.dronecourier.management.mediflight.model.Drone;
-import com.dronecourier.management.mediflight.service.DroneServiceImpl;
+import com.dronecourier.management.mediflight.service.DroneService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class DroneController {
-    DroneServiceImpl droneServiceImpl;
+    DroneService droneService;
     DroneMapper droneMapper;
     MedicationMapper medicationMapper;
 
@@ -37,12 +37,12 @@ public class DroneController {
         if (droneDto.getId() == null)
             droneDto.setId(String.valueOf(UUID.randomUUID()));
         Drone drone = droneMapper.droneDtoToDrone(droneDto);
-        droneServiceImpl.registerDrone(drone);
+        droneService.save(drone);
     }
 
     @GetMapping("/available")
     public ResponseEntity<List<DroneDto>> getAvailableDrones() {
-        return ResponseEntity.ok(droneServiceImpl.getAvailableDrones()
+        return ResponseEntity.ok(droneService.getAvailableDrones()
                 .stream()
                 .map(droneMapper::droneToDroneDto)
                 .collect(Collectors.toList())
@@ -51,12 +51,12 @@ public class DroneController {
 
     @GetMapping("/battery/{droneId}")
     public ResponseEntity<Integer> getDroneBatteryLevel(@Valid @PathVariable String droneId) {
-        return ResponseEntity.ok(droneServiceImpl.getDroneBatteryLevel(droneId));
+        return ResponseEntity.ok(droneService.getDroneBatteryLevel(droneId));
     }
 
     @GetMapping("/{droneId}/medications")
     public ResponseEntity<MedicineDeliveryDroneDto> getDroneWithCargo(@Valid @PathVariable String droneId) {
-        Drone drone = droneServiceImpl.getRequestedDroneWithMedications(droneId);
+        Drone drone = droneService.getRequestedDroneWithMedications(droneId);
         List<MedicationWithoutImageDto> dtoList = drone.getMedications()
                 .stream()
                 .map(medicationMapper::medicationToMedicationWithoutImageDto)

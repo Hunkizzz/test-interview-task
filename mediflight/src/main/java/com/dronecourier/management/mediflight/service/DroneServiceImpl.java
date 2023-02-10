@@ -23,7 +23,7 @@ public class DroneServiceImpl implements DroneService {
 
     @Override
     @Transactional
-    public void registerDrone(Drone drone) {
+    public void save(Drone drone) {
         droneRepository.save(drone);
     }
 
@@ -58,12 +58,6 @@ public class DroneServiceImpl implements DroneService {
         return droneRepository.findById(UUID.fromString(droneId))
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Drone with this id was not found: %s", droneId)))
                 .getBatteryCapacity();
-    }
-
-    @Override
-    @Transactional
-    public void save(Drone drone) {
-        droneRepository.save(drone);
     }
 
 }

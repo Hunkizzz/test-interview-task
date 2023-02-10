@@ -78,7 +78,7 @@ class DroneControllerTests {
                 .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneDto)))
                 .andExpect(status().isOk());
 
-        verify(droneServiceImpl, times(1)).registerDrone(drone);
+        verify(droneServiceImpl, times(1)).save(drone);
     }
 
     @Test

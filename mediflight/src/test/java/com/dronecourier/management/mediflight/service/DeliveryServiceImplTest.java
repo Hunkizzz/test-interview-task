@@ -10,7 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ReflectionUtils;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +28,7 @@ import static org.mockito.Mockito.when;
 class DeliveryServiceImplTest {
     @Mock
     DroneService droneService;
+
     @Mock
     MedicationService medicationService;
 
@@ -69,6 +75,13 @@ class DeliveryServiceImplTest {
         Medication medication = new Medication();
         medication.setId(UUID.fromString(uuid));
         when(medicationService.getMedicationList(deliveryDto.getMedicationIds())).thenReturn(Collections.singletonList(medication));
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+
+        Field field = ReflectionUtils.findField(DeliveryServiceImpl.class, "validator");
+        assert field != null;
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, deliveryService, validator);
         assertThatThrownBy(() -> deliveryService.loadDrone(deliveryDto))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("This ids of medications were not found : 70f7b8c9-c5e5-4d5b-8b30-e5c7f5d0cf8f");
@@ -85,8 +98,23 @@ class DeliveryServiceImplTest {
         drone.setWeightLimit(100);
         drone.setState(DroneState.IDLE);
         when(droneService.getRequestedDrone("1")).thenReturn(drone);
-        List<Medication> medications = Arrays.asList(new Medication(), new Medication());
-        medications.forEach(medication -> medication.setWeight(200));
+        Medication medication1 = new Medication();
+        medication1.setCode("ADAHGJ");
+        medication1.setName("SDDSD");
+        Medication medication2 = new Medication();
+        medication2.setCode("ADAHGJ");
+        medication2.setName("FKSLS");
+        List<Medication> medications = Arrays.asList(medication1, medication2);
+        for (Medication medication : medications) {
+            medication.setWeight(200);
+            medication.setId(UUID.randomUUID());
+        }
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Field field = ReflectionUtils.findField(DeliveryServiceImpl.class, "validator");
+        assert field != null;
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, deliveryService, validator);
         when(medicationService.getMedicationList(deliveryDto.getMedicationIds())).thenReturn(medications);
         assertThatThrownBy(() -> deliveryService.loadDrone(deliveryDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -99,6 +127,12 @@ class DeliveryServiceImplTest {
         drone.setId(UUID.fromString("dafb1a60-c953-4baa-b8e8-908b7b8f1b0a"));
         drone.setState(DroneState.IDLE);
         when(droneService.getRequestedDrone("1")).thenReturn(drone);
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Field field = ReflectionUtils.findField(DeliveryServiceImpl.class, "validator");
+        assert field != null;
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, deliveryService, validator);
         assertThatThrownBy(() -> deliveryService.deliverDrone("1"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The drone is not in a state to be delivered");

@@ -58,7 +58,7 @@ class DroneServiceImplTest {
 
     @Test
     void shouldSaveDrone_WhenRegisterDrone() {
-        droneService.registerDrone(drone);
+        droneService.save(drone);
         verify(droneRepository, times(1)).save(any(Drone.class));
     }
 
@@ -72,7 +72,7 @@ class DroneServiceImplTest {
     @Test
     void registerDrone() {
         Drone drone = new Drone();
-        droneService.registerDrone(drone);
+        droneService.save(drone);
         verify(droneRepository, times(1)).save(drone);
     }
 

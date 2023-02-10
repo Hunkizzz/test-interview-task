@@ -5,7 +5,7 @@ import com.dronecourier.management.mediflight.model.Drone;
 import java.util.List;
 
 public interface DroneService {
-    void registerDrone(Drone droneDto);
+    void save(Drone drone);
 
     Drone getRequestedDrone(String droneId);
 
@@ -16,6 +16,4 @@ public interface DroneService {
     List<Drone> getAvailableDrones();
 
     int getDroneBatteryLevel(String droneId);
-
-    void save(Drone drone);
 }
